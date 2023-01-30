@@ -4,7 +4,8 @@ use Symfony\Component\Routing\Route;
 
 $routes = new RouteCollection();
 $routes->add('hello',new Route('/hello/{name}',['name' => 'audry']));
-$routes->add('goodbye',new Route('/goodbye}'));
+$routes->add('goodbye',new Route('/goodbye'));
+$routes->add('home',new Route('/'));
 
 
 return $routes;
