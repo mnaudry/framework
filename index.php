@@ -2,6 +2,8 @@
 require_once __DIR__.'/vendor/autoload.php';
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\RequestContext;       
 
 
 if(!isset($request)) {
@@ -10,13 +12,18 @@ if(!isset($request)) {
 
 $path = $request->getPathInfo();
 
+$context = new RequestContext();
+$context = $context->fromRequest($request);
 
 $response = new Response();
 
+/*
 $map = [
     '/hello' => 'hello',
     '/goodbye' => 'goodbye',
-];
+];*/
+
+$routes = include __DIR__."/template/routes.php";
 
 
 $go = $map[$path] ?? null ;

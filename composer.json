@@ -20,6 +20,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "symfony/http-foundation": "^6.2"
+        "symfony/http-foundation": "^6.2",
+        "symfony/routing": "^6.2"
     }
 }
