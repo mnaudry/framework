@@ -1,11 +1,12 @@
 {
-    "name": "maudry/framework",
+    "name": "mnaudry/bomoyi",
     "description": "Doing a framewrok using symfony for fun",
     "type": "project",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "App\\": "app/"
+            "App\\": "app/",
+            "Bomoyi\\": "src/"
         }
     },
     "require-dev": {

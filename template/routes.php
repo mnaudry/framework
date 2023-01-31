@@ -4,7 +4,7 @@ use Symfony\Component\Routing\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 
-function render_template(Request $request ){
+function render_template(Request $request){
 
     ob_start();
     extract($request->attributes->all(),EXTR_SKIP);

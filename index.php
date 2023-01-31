@@ -7,13 +7,14 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Exception\RouteNotFoundException; 
 use Symfony\Component\HttpKernel\Controller\ControllerResolver;  
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver; 
+use Bomoyi\Foundation\Application;
 
 
 if(!isset($request)) {
     $request = Request::createFromGlobals();
 }
 
-$path = $request->getPathInfo();
+/*$path = $request->getPathInfo();
 
 $context = new RequestContext();
 $context = $context->fromRequest($request);
@@ -42,5 +43,14 @@ try {
     }
 }
 
+
+$response->send();*/
+
+$routes = include __DIR__."/template/routes.php";
+
+$app = new Application();
+
+
+$response = $app->handle($request,$routes);
 
 $response->send();
