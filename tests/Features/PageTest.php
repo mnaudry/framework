@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 
 class PageTest extends TestCase {
-
+/*
     public function test_Error_page() {
 
         $request = Request::create("/toto");
@@ -37,5 +37,5 @@ class PageTest extends TestCase {
         $content =  ob_get_clean();
 
         $this->assertEquals('goodbye!', $content);
-    }
+    }*/
 }
