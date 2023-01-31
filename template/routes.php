@@ -2,6 +2,7 @@
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\HttpFoundation\Response;
+use App\Controller\NumberController;
 
 function render_template($request){
 
@@ -17,6 +18,8 @@ $routes->add('hello',new Route('/hello/{name}',['name' => 'audry','_controller' 
 ));
 $routes->add('goodbye',new Route('/goodbye',['_controller' => 'render_template']));
 $routes->add('home',new Route('/',['_controller' => 'render_template' ]));
+// non-desirable side effect .. class is always instantiated
+$routes->add('world',new Route('/number',['_controller' => [new NumberController(), 'index'] ]));
 
 
 return $routes;
