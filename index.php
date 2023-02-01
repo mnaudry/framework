@@ -4,7 +4,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Bomoyi\Foundation\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Bomoyi\Event\ResponseEvent;
-
+use App\Subscriber\ContentLengthSubscriber;
+use App\Subscriber\ContentTypeSubscriber;
 
 if(!isset($request)) {
     $request = Request::createFromGlobals();
@@ -12,25 +13,8 @@ if(!isset($request)) {
 
 $dispatcher = new EventDispatcher();
 
-$dispatcher->addListener('responseEvent',function(ResponseEvent $event){
-    $response = $event->getResponse();
-    $request = $event->getRequest();
-    if(($route = $request->attributes->get('_route')) == "home") {
-        $response->setContent(json_encode(['where' => $response->getContent()]));
-        $response->headers->set('Content-Type',"application/json");
-    }
-
-   
-});
-
-$dispatcher->addListener('responseEvent', function(ResponseEvent $event){
-    $response = $event->getResponse();
-    $headers = $response->headers;
-
-    if(!$headers->has("Content-Length")) {
-        $headers->set("Content-Length",strlen($response->getContent()));
-    }
-},-255);
+$dispatcher->addSubscriber(new ContentTypeSubscriber());
+$dispatcher->addSubscriber(new ContentLengthSubscriber());
 
 
 $routes = include __DIR__."/template/routes.php";
