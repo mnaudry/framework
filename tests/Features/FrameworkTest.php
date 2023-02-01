@@ -4,6 +4,7 @@ namespace Test\Features;
 use PHPUnit\Framework\TestCase;
 use Bomoyi\Foundation\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolverInterface;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\Routing;
@@ -12,29 +13,29 @@ use Symfony\Component\Routing\RouteCollection;
 
 class FrameworkTest extends TestCase {
     public function testNotFoundHandling() {
-        $bomoyi = $this->getFrameworkForException(new ResourceNotFoundException());
+        $bomoyi = new Application();
 
         $reponse = $bomoyi->handle(Request::create("/toto"),new RouteCollection());
 
         $this->assertEquals(404,$reponse->getStatusCode());
     }
 
-    private function getFrameworkForException(\Exception $e) {
-        $matcher = $this->createMock(Routing\Matcher\UrlMatcherInterface::class);
+    public function testRouteController() {
+        $bomoyi = new Application();
+        $routes = new RouteCollection();
 
-        $matcher
-            ->expects($this->once())
-            ->method('match')
-            ->will($this->throwException($e));
+        $name = "mnaudry";
 
-        $controllerResolver = $this->createMock(ControllerResolverInterface::class);
-        $argumentResolver = $this->createMock(ArgumentResolverInterface::class);
+        $routes->add('say',new Routing\Route('/say/{name}',['_controller' => 'Test\Features\FrameworkTest::getNameController' ]));
 
-        $framework = new Application();
+    
+        $reponse = $bomoyi->handle(Request::create("/say/{$name}"),$routes);
 
-        $framework->setControllerResolver($controllerResolver );
-        $framework->setArgumentResolver($argumentResolver);
+        $this->assertEquals(200,$reponse->getStatusCode());
+        $this->assertEquals($name,$reponse->getContent());
+    }
 
-        return $framework;
+    public static function getNameController($name){
+        return  new Response($name);
     }
 }

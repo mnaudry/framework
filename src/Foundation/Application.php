@@ -48,6 +48,7 @@ class Application {
         try {
             $request->attributes->add($matcher->match($request->getPathInfo()));
             $controller = $this->contollerResolver->getController($request);
+
             $arguments = $this->argumentResolver->getArguments($request,$controller);
             return call_user_func_array($controller,$arguments );
         }catch(Exception $e){;
