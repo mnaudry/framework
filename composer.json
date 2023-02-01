@@ -23,6 +23,7 @@
     "require": {
         "symfony/http-foundation": "^6.2",
         "symfony/routing": "^6.2",
-        "symfony/http-kernel": "^6.2"
+        "symfony/http-kernel": "^6.2",
+        "symfony/event-dispatcher": "^6.2"
     }
 }
