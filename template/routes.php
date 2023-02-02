@@ -12,7 +12,7 @@ function render_template(Request $request){
 
     $response = new Response(ob_get_clean());
 
-    $response->setTtl(120);
+    //$response->setTtl(120);
 
     return $response;
 }
