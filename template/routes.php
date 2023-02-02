@@ -10,7 +10,11 @@ function render_template(Request $request){
     extract($request->attributes->all(),EXTR_SKIP);
     include __DIR__.sprintf("/pages/%s.php",$_route);
 
-    return new Response(ob_get_clean());
+    $response = new Response(ob_get_clean());
+
+    $response->setTtl(120);
+
+    return $response;
 }
 
 $routes = new RouteCollection();

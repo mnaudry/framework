@@ -4,32 +4,36 @@ use Symfony\Component\HttpFoundation\Request;
 use Bomoyi\Foundation\Application;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Bomoyi\Event\ResponseEvent;
-use App\Subscriber\ContentLengthSubscriber;
-use App\Subscriber\ContentTypeSubscriber;
+use Symfony\Component\Routing\RequestContext;  
+use Symfony\Component\HttpKernel\Controller\ControllerResolver;  
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver; 
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\HttpKernel\HttpCache\HttpCache;
+use Symfony\Component\HttpKernel\HttpCache\Store;
 
 if(!isset($request)) {
     $request = Request::createFromGlobals();
 }
 
-$dispatcher = new EventDispatcher();
-
-$dispatcher->addSubscriber(new ContentTypeSubscriber());
-$dispatcher->addSubscriber(new ContentLengthSubscriber());
-
 
 $routes = include __DIR__."/template/routes.php";
 
-$app = new Application();
+$dispatcher = new EventDispatcher();
 
+$contollerResolver = new ControllerResolver();
 
-$response = $app->handle($request,$routes);
+$argumentResolver = new ArgumentResolver();
 
+$matcher = new UrlMatcher($routes, new RequestContext());
+
+$app = new Application($dispatcher,$contollerResolver, $argumentResolver, $matcher);
+
+$app = new HttpCache($app, new Store(__DIR__.'/cache'));
+
+$response = $app->handle($request);
 
 $event = new ResponseEvent($response ,$request);
 
-
-
 $dispatcher->dispatch($event,'responseEvent');
-
 
 $response->send();
