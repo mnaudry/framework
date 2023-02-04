@@ -1,0 +1,18 @@
+hello:
+  name: hello
+  path: /hello/{name}
+  controller: render_template
+  params:
+    name: audry
+home:
+  name: home
+  path: /
+  controller: render_template
+goodbye:
+  name: goodbye
+  path: /goodbye
+  controller: render_template
+number:
+  name: number
+  path: /number
+  controller: App\Controller\NumberController::index

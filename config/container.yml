@@ -1,0 +1,25 @@
+services:
+  context: 
+    class: Symfony\Component\Routing\RequestContext
+  routeCollection:
+    class:  Symfony\Component\Routing\RouteCollection
+  request_stack:
+    class: Symfony\Component\HttpFoundation\RequestStack
+  controller_resolver:
+    class:  Symfony\Component\HttpKernel\Controller\ControllerResolver
+  argument_resolver:
+    class:  Symfony\Component\HttpKernel\Controller\ArgumentResolver
+  content_type_subscriber:
+    class:  App\Subscriber\ContentTypeSubscriber
+  content_length_subscriber:  
+    class:  App\Subscriber\ContentLengthSubscriber
+  dispatcher:
+    class:  Symfony\Component\EventDispatcher\EventDispatcher
+    calls:
+      - [addSubscriber,['@listener.router']]
+      - [addSubscriber,['@content_type_subscriber']]
+      - [addSubscriber,['@content_length_subscriber']]
+  application:
+    class:  Bomoyi\Foundation\Application
+    arguments: ['@dispatcher','@controller_resolver','@request_stack','@argument_resolver']
+

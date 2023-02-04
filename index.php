@@ -2,57 +2,46 @@
 require_once __DIR__.'/vendor/autoload.php';
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Bomoyi\Foundation\Application;
-use App\Subscriber\ContentLengthSubscriber;
-use App\Subscriber\ContentTypeSubscriber;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Bomoyi\Event\ResponseEvent;
-use Symfony\Component\Routing\RequestContext; 
-use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Controller\ControllerResolver;  
-use Symfony\Component\HttpKernel\Controller\ArgumentResolver; 
 use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Symfony\Component\HttpKernel\HttpCache\HttpCache;
-use Symfony\Component\HttpKernel\HttpCache\Store;
 use Symfony\Component\HttpKernel\EventListener\RouterListener;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\HttpKernel\EventListener\ErrorListener;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
 if(!isset($request)) {
     $request = Request::createFromGlobals();
 }
 
+$containerBuilder = new ContainerBuilder();
+$loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__."/config"));
+$loader->load('container.yml');
 
 $routes = include __DIR__."/template/routes.php";
 
-$dispatcher = new EventDispatcher();
+$containerBuilder->register('matcher', UrlMatcher::class)
+->setArguments([$routes, new Reference('context')]);
 
-$contollerResolver = new ControllerResolver();
+$containerBuilder->register('listener.router', RouterListener::class)
+->setArguments([new Reference('matcher'), new Reference('request_stack')]);
 
-$argumentResolver = new ArgumentResolver();
-
-$requestStack = new RequestStack();
-
-$matcher = new UrlMatcher($routes, new RequestContext());
-
-$dispatcher->addSubscriber(new RouterListener($matcher,$requestStack));
-
-$dispatcher->addSubscriber(new ContentTypeSubscriber());
-
-$dispatcher->addSubscriber(new ContentLengthSubscriber());
+$dispatcher = $containerBuilder->get('dispatcher');
 
 $errorHandler = function (FlattenException $exception) {
     $msg = 'Something went wrong! ('.$exception->getMessage().')';
 
     return new Response($msg, $exception->getStatusCode());
 };
+
+$dispatcher = $containerBuilder->get('dispatcher');
+
 $dispatcher->addSubscriber(new ErrorListener($errorHandler));
 
-$app = new Application($dispatcher,$contollerResolver,$requestStack, $argumentResolver);
+$response = $containerBuilder->get('application')->handle($request);
 
-//$app = new HttpCache($app, new Store(__DIR__.'/cache'));
-
-$response = $app->handle($request);
 
 $event = new ResponseEvent($response ,$request);
 
